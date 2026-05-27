@@ -1,0 +1,9 @@
+{
+  "name": "@clipvity/shared",
+  "author": "Rahul Kesharwani",
+  "type": "module",
+  "dependencies": {
+    "@types/node": "^25.9.1",
+    "zod": "^4.4.3"
+  }
+}

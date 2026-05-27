@@ -1,9 +1,24 @@
 {
   "name": "@clipvity/shared",
   "author": "Rahul Kesharwani",
+  "private": true,
   "type": "module",
+  "exports": {
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "import": "./dist/schemas/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
   "dependencies": {
-    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
     "zod": "^4.4.3"
   }
 }

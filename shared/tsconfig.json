@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./dist",
     "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "esnext",
-    "types": ["node"],
-    "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
+    "sourceMap": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
@@ -14,13 +19,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noPropertyAccessFromIndexSignature": true,
-    "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "include": ["./**/*"]
+  "include": ["./**/*"],
+  "exclude": ["dist"]
 }

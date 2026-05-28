@@ -8,13 +8,9 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.js"
     },
-    "./schemas/auth": {
-      "types": "./dist/schemas/auth/index.d.ts",
-      "import": "./dist/schemas/auth/index.js"
-    },
-    "./schemas/video": {
-      "types": "./dist/schemas/video/index.d.ts",
-      "import": "./dist/schemas/video/index.js"
+    "./schema/auth": {
+      "types": "./dist/schema/auth/auth.d.ts",
+      "import": "./dist/schema/auth/auth.js"
     }
   },
   "scripts": {

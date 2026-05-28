@@ -3,14 +3,7 @@ import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { User } from '../../models/User.js';
-
-const getJwtSecret = (): string => {
-  const secret = process.env['JWT_SECRET'];
-  if (!secret) {
-    throw new Error('JWT_SECRET is not defined in environment variables');
-  }
-  return secret;
-};
+import { getJwtSecret } from '../../constants/GetJwtSecret.js';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {

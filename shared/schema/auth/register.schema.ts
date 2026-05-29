@@ -33,4 +33,15 @@ export const registerSchema = z
     path: ['confirmPassword'],
   });
 
+export const serverRegisterSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name cannot exceed 100 characters'),
+  email: z.email('Invalid email address').toLowerCase(),
+  password: passwordSchema,
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type ServerRegisterInput = z.infer<typeof serverRegisterSchema>;

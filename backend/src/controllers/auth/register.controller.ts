@@ -1,13 +1,13 @@
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import type { Request, Response } from 'express';
-import { registerSchema } from '@clipvity/shared/schema/auth';
+import { serverRegisterSchema } from '@clipvity/shared/schema/auth';
 import { User } from '../../models/User.js';
 import { getJwtSecret } from '../../constants/GetJwtSecret.js';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const validationResult = registerSchema.safeParse(req.body);
+    const validationResult = serverRegisterSchema.safeParse(req.body);
 
     if (!validationResult.success) {
       res.status(400).json({

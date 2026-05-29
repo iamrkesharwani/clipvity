@@ -1,7 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import Register from '../pages/auth/Register';
-
-const Home = () => <div>Clipvity</div>;
+import Login from '../pages/auth/Login';
+import ProtectedRoute from './ProtectedRoute';
+import Home from '../pages/home/Home';
 
 const AppRoutes = () => {
   return (
@@ -9,6 +10,11 @@ const AppRoutes = () => {
       <Route>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route />
+        </Route>
       </Route>
     </Routes>
   );

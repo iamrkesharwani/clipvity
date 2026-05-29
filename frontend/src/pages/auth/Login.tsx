@@ -3,32 +3,27 @@ import { useAppDispatch, useAppSelector } from '../../hooks/reduxHook';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  registerSchema,
-  type RegisterInput,
-} from '@clipvity/shared/schema/auth';
-import { registerUser } from '../../store/auth/authThunk';
+import { loginSchema, type LoginInput } from '@clipvity/shared/schema/auth';
+import { loginUser } from '../../store/auth/authThunk';
 import { Eye, EyeOff, ChevronLeft } from 'lucide-react';
 
-const Register = () => {
+const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useAppSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: RegisterInput) => {
-    const { confirmPassword, ...apiData } = data;
-    const resultAction = await dispatch(registerUser(apiData));
-    if (registerUser.fulfilled.match(resultAction)) navigate('/');
+  const onSubmit = async (data: LoginInput) => {
+    const resultAction = await dispatch(loginUser(data));
+    if (loginUser.fulfilled.match(resultAction)) navigate('/');
   };
 
   const inputClass =
@@ -36,44 +31,6 @@ const Register = () => {
 
   const labelClass =
     'block mb-1.5 text-[11px] font-semibold tracking-[0.2em] uppercase text-[#8891a8]';
-
-  const PasswordField = ({
-    name,
-    label,
-    show,
-    toggle,
-    error: fieldError,
-  }: {
-    name: 'password' | 'confirmPassword';
-    label: string;
-    show: boolean;
-    toggle: () => void;
-    error?: string;
-  }) => (
-    <div>
-      <label className={labelClass}>{label}</label>
-      <div className="relative">
-        <input
-          {...register(name)}
-          type={show ? 'text' : 'password'}
-          placeholder="••••••••"
-          className={`${inputClass} pr-11`}
-        />
-        <button
-          type="button"
-          onClick={toggle}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3d4563] hover:text-[#8891a8] transition-colors duration-150"
-          tabIndex={-1}
-          aria-label={show ? 'Hide password' : 'Show password'}
-        >
-          {show ? <EyeOff size={16} /> : <Eye size={16} />}
-        </button>
-      </div>
-      {fieldError && (
-        <p className="mt-1.5 text-xs text-red-400">{fieldError}</p>
-      )}
-    </div>
-  );
 
   return (
     <div className="flex w-screen h-dvh overflow-hidden bg-[#080b14] font-sans">
@@ -93,24 +50,22 @@ const Register = () => {
 
         <div className="relative z-10">
           <p className="mb-4 text-[11px] font-semibold tracking-[0.32em] uppercase text-orange-500">
-            Members Only
+            Welcome Back
           </p>
           <h1 className="mb-5 font-display font-semibold leading-[1.08] text-[clamp(2.6rem,3.2vw,3.8rem)] text-[#f0ece4]">
-            Where desire
+            Your desires
             <br />
-            <em className="italic text-orange-500">finds</em> its
+            <em className="italic text-orange-500">await</em> your
             <br />
-            audience.
+            return.
           </h1>
           <p className="max-w-[18rem] text-[15px] leading-[1.65] text-[#8891a8]">
-            Exclusive content. Uncompromising quality. A space built for adults
-            who know what they want.
+            Pick up right where you left off. Everything you love is still here,
+            just for you.
           </p>
         </div>
 
-        <p className="text-xs text-[#3d4563]">
-          18+ only · You must agree to our Terms upon registration
-        </p>
+        <p className="text-xs text-[#3d4563]">18+ only · Members access only</p>
       </div>
 
       {/* Right panel */}
@@ -127,16 +82,16 @@ const Register = () => {
 
         <div className="w-full max-w-90 mx-auto">
           <h2 className="mb-1 font-display font-semibold text-[2rem] text-[#f0ece4]">
-            Create your account
+            Sign in
           </h2>
 
           <p className="mb-8 text-sm text-[#8891a8]">
-            Already a member?{' '}
+            Not a member yet?{' '}
             <Link
-              to={'/login'}
+              to={'/register'}
               className="text-orange-500 font-medium no-underline hover:text-orange-400 transition-colors duration-150"
             >
-              Sign in
+              Create an account
             </Link>
           </p>
 
@@ -147,21 +102,6 @@ const Register = () => {
           )}
 
           <div className="flex flex-col gap-5">
-            <div>
-              <label className={labelClass}>Full Name</label>
-              <input
-                {...register('name')}
-                type="text"
-                placeholder="Jane Doe"
-                className={inputClass}
-              />
-              {errors.name && (
-                <p className="mt-1.5 text-xs text-red-400">
-                  {errors.name.message}
-                </p>
-              )}
-            </div>
-
             <div>
               <label className={labelClass}>Email</label>
               <input
@@ -177,30 +117,41 @@ const Register = () => {
               )}
             </div>
 
-            <PasswordField
-              name="password"
-              label="Password"
-              show={showPassword}
-              toggle={() => setShowPassword((p) => !p)}
-              error={errors.password?.message}
-            />
-
-            <PasswordField
-              name="confirmPassword"
-              label="Confirm Password"
-              show={showConfirmPassword}
-              toggle={() => setShowConfirmPassword((p) => !p)}
-              error={errors.confirmPassword?.message}
-            />
-
-            <p className="text-xs leading-relaxed text-[#3d4563]">
-              By registering you confirm you are 18 years of age or older and
-              agree to our{' '}
-              <Link to={'/terms'} className="text-[#8891a8] underline">
-                Terms of Service
-              </Link>
-              .
-            </p>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className={labelClass} style={{ marginBottom: 0 }}>
+                  Password
+                </label>
+                <Link
+                  to={'/forgot'}
+                  className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#3d4563] hover:text-[#8891a8] transition-colors duration-150"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <input
+                  {...register('password')}
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  className={`${inputClass} pr-11`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3d4563] hover:text-[#8891a8] transition-colors duration-150"
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-1.5 text-xs text-red-400">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
 
             <button
               type="button"
@@ -208,7 +159,7 @@ const Register = () => {
               disabled={isLoading}
               className="w-full py-3.5 rounded-md bg-orange-500 text-[#080b14] text-[13px] font-bold tracking-[0.14em] uppercase transition-colors duration-150 hover:bg-orange-400 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {isLoading ? 'Creating account…' : 'Join Now'}
+              {isLoading ? 'Signing in…' : 'Sign In'}
             </button>
           </div>
         </div>
@@ -217,4 +168,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

@@ -6,7 +6,7 @@ import { apiClient } from '../../api/client';
 
 export const registerUser = createAsyncThunk<
   IUserPublic,
-  RegisterInput,
+  Omit<RegisterInput, 'confirmPassword'>,
   { rejectValue: string }
 >('auth/register', async (credentials, thunkAPI) => {
   try {
@@ -50,6 +50,6 @@ export const checkAuth = createAsyncThunk<
     const response = await apiClient.get('/auth/me');
     return response.data.data.user;
   } catch (error) {
-    return thunkAPI.rejectWithValue;
+    return thunkAPI.rejectWithValue(extractErrorMessage(error));
   }
 });

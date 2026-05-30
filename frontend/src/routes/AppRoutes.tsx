@@ -13,7 +13,10 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
 
         <Route element={<ProtectedRoute />}>
-          <Route />
+          <Route
+            path="/dashboard"
+            element={<div>Authenticated Dashboard View</div>}
+          />
         </Route>
       </Route>
     </Routes>

@@ -27,11 +27,11 @@ const VideoSchema = new Schema<VideoDocument>(
     },
     thumbnail: {
       type: String,
-      required: true,
+      required: false,
     },
     masterUrl: {
       type: String,
-      required: true,
+      required: false,
     },
     resolutions: {
       p360: String,

@@ -60,7 +60,7 @@ export const getUploadUrl = async (
     });
 
     res.status(200).json({
-      status: true,
+      success: true,
       message: 'Upload URL generated successfully',
       uploadUrl: signedUrl,
       videoId: video._id,

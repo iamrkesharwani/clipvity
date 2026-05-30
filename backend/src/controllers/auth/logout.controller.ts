@@ -5,8 +5,8 @@ export const logout = (_req: Request, res: Response): void => {
     res.cookie('token', '', {
       httpOnly: true,
       expires: new Date(0),
-      secure: process.env['JWT_SECRET'] === 'production',
-      sameSite: process.env['JWT_SECRET'] === 'production' ? 'none' : 'lax',
+      secure: process.env['NODE_ENV'] === 'production',
+      sameSite: process.env['NODE_ENV'] === 'production' ? 'none' : 'lax',
     });
 
     res.status(200).json({

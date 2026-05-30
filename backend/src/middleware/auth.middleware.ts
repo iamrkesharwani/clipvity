@@ -9,7 +9,7 @@ export const protect = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req.cookies?.token;
+    const token = req.cookies['token'];
 
     if (!token) {
       res.status(401).json({
@@ -19,9 +19,15 @@ export const protect = async (
       return;
     }
 
-    const decoded = jwt.verify(token, getJwtSecret()) as { userId: string };
-
-    req.userId = decoded.userId;
+    const decoded = jwt.verify(token, getJwtSecret());
+    if (typeof decoded === 'string' || !decoded['userId']) {
+      res
+        .status(401)
+        .json({ success: false, message: 'Not authorized, token failed' });
+      return;
+    }
+    req.userId = decoded['userId'] as string;
+    
     next();
   } catch (error) {
     console.error('Issue occurred:', error);

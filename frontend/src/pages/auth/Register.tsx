@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/reduxHook';
 import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, type UseFormRegister } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   registerSchema,
@@ -9,6 +9,53 @@ import {
 } from '@clipvity/shared/schema/auth';
 import { registerUser } from '../../store/auth/authThunk';
 import { Eye, EyeOff, ChevronLeft } from 'lucide-react';
+
+const cls = {
+  input:
+    'w-full bg-[#161b2e] border border-white/[0.07] rounded-md px-4 py-3 text-[15px] text-[#f0ece4] caret-orange-500 outline-none transition-[border,box-shadow] duration-150 placeholder:text-[#3d4563] focus:border-orange-500 focus:ring-[3px] focus:ring-orange-500/15',
+  label:
+    'block mb-1.5 text-[11px] font-semibold tracking-[0.2em] uppercase text-[#8891a8]',
+};
+
+interface PasswordFieldProps {
+  name: 'password' | 'confirmPassword';
+  label: string;
+  show: boolean;
+  toggle: () => void;
+  error?: string;
+  register: UseFormRegister<RegisterInput>;
+}
+
+const PasswordField = ({
+  name,
+  label,
+  show,
+  toggle,
+  error: fieldError,
+  register,
+}: PasswordFieldProps) => (
+  <div>
+    <label className={cls.label}>{label}</label>
+    <div className="relative">
+      <input
+        {...register(name)}
+        type={show ? 'text' : 'password'}
+        placeholder="••••••••"
+        className={`${cls.input} pr-11`}
+      />
+      <button
+        type="button"
+        onClick={toggle}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3d4563] hover:text-[#8891a8] transition-colors duration-150"
+        tabIndex={-1}
+        aria-label={show ? 'Hide password' : 'Show password'}
+      >
+        {show ? <EyeOff size={16} /> : <Eye size={16} />}
+      </button>
+    </div>
+    {fieldError && <p className="mt-1.5 text-xs text-red-400">{fieldError}</p>}
+  </div>
+);
 
 const Register = () => {
   const dispatch = useAppDispatch();
@@ -26,54 +73,10 @@ const Register = () => {
   });
 
   const onSubmit = async (data: RegisterInput) => {
-    const { confirmPassword, ...apiData } = data;
+    const { confirmPassword: _c, ...apiData } = data;
     const resultAction = await dispatch(registerUser(apiData));
     if (registerUser.fulfilled.match(resultAction)) navigate('/');
   };
-
-  const inputClass =
-    'w-full bg-[#161b2e] border border-white/[0.07] rounded-md px-4 py-3 text-[15px] text-[#f0ece4] caret-orange-500 outline-none transition-[border,box-shadow] duration-150 placeholder:text-[#3d4563] focus:border-orange-500 focus:ring-[3px] focus:ring-orange-500/15';
-
-  const labelClass =
-    'block mb-1.5 text-[11px] font-semibold tracking-[0.2em] uppercase text-[#8891a8]';
-
-  const PasswordField = ({
-    name,
-    label,
-    show,
-    toggle,
-    error: fieldError,
-  }: {
-    name: 'password' | 'confirmPassword';
-    label: string;
-    show: boolean;
-    toggle: () => void;
-    error?: string;
-  }) => (
-    <div>
-      <label className={labelClass}>{label}</label>
-      <div className="relative">
-        <input
-          {...register(name)}
-          type={show ? 'text' : 'password'}
-          placeholder="••••••••"
-          className={`${inputClass} pr-11`}
-        />
-        <button
-          type="button"
-          onClick={toggle}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3d4563] hover:text-[#8891a8] transition-colors duration-150"
-          tabIndex={-1}
-          aria-label={show ? 'Hide password' : 'Show password'}
-        >
-          {show ? <EyeOff size={16} /> : <Eye size={16} />}
-        </button>
-      </div>
-      {fieldError && (
-        <p className="mt-1.5 text-xs text-red-400">{fieldError}</p>
-      )}
-    </div>
-  );
 
   return (
     <div className="flex w-screen h-dvh overflow-hidden bg-[#080b14] font-sans">
@@ -148,12 +151,12 @@ const Register = () => {
 
           <div className="flex flex-col gap-5">
             <div>
-              <label className={labelClass}>Full Name</label>
+              <label className={cls.label}>Full Name</label>
               <input
                 {...register('name')}
                 type="text"
                 placeholder="Jane Doe"
-                className={inputClass}
+                className={cls.input}
               />
               {errors.name && (
                 <p className="mt-1.5 text-xs text-red-400">
@@ -163,12 +166,12 @@ const Register = () => {
             </div>
 
             <div>
-              <label className={labelClass}>Email</label>
+              <label className={cls.label}>Email</label>
               <input
                 {...register('email')}
                 type="email"
                 placeholder="jane@example.com"
-                className={inputClass}
+                className={cls.input}
               />
               {errors.email && (
                 <p className="mt-1.5 text-xs text-red-400">
@@ -183,6 +186,7 @@ const Register = () => {
               show={showPassword}
               toggle={() => setShowPassword((p) => !p)}
               error={errors.password?.message}
+              register={register}
             />
 
             <PasswordField
@@ -191,6 +195,7 @@ const Register = () => {
               show={showConfirmPassword}
               toggle={() => setShowConfirmPassword((p) => !p)}
               error={errors.confirmPassword?.message}
+              register={register}
             />
 
             <p className="text-xs leading-relaxed text-[#3d4563]">

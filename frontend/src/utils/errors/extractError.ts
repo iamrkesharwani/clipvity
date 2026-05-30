@@ -1,6 +1,9 @@
-export const extractErrorMessage = (error: any): string => {
-  if (error.response && error.response.data && error.response.data.message) {
-    return error.response.data.message;
+import axios from 'axios';
+
+export const extractErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (error.response?.data?.message as string) ?? error.message;
   }
-  return error.message || 'An unexpected error occurred';
+  if (error instanceof Error) return error.message;
+  return 'An unexpected error occurred';
 };

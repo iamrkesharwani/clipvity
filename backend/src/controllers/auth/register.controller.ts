@@ -4,6 +4,7 @@ import type { Request, Response } from 'express';
 import { serverRegisterSchema } from '@clipvity/shared/schema/auth';
 import { User } from '../../models/User.js';
 import { getJwtSecret } from '../../constants/GetJwtSecret.js';
+import { logger } from '../../utils/logger.js';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -58,7 +59,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    logger.error(error, 'Registration error');
     res.status(500).json({
       success: false,
       message: 'Internal server error during registration',

@@ -1,6 +1,7 @@
 import type { Response } from 'express';
 import { User } from '../../models/User.js';
 import type { AuthRequest } from '../../constants/AuthResponse.js';
+import { logger } from '../../utils/logger.js';
 
 export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -34,7 +35,7 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    console.error('Get current user error:', error);
+    logger.error(error, 'Get current user error');
     res.status(500).json({
       success: false,
       message: 'Internal server error while fetching user',

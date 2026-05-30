@@ -1,4 +1,20 @@
 import mongoose from 'mongoose';
+import { logger } from '../utils/logger.js';
+
+mongoose.connection.on('connected', () => {
+  logger.info('Mongoose connection event: Connected to MongoDB cluster');
+});
+
+mongoose.connection.on('error', (err) => {
+  logger.error(
+    err,
+    'Mongoose connection event: Background database error occurred'
+  );
+});
+
+mongoose.connection.on('disconnected', () => {
+  logger.warn('Mongoose connection event: Lost connection to MongoDB cluster');
+});
 
 export const connectDb = async () => {
   try {
@@ -13,9 +29,12 @@ export const connectDb = async () => {
       dbName: dbName || 'clipvity',
     });
 
-    console.log('Successfully connected to MongoDB');
+    logger.info(
+      { dbName: dbName || 'clipvity' },
+      'Successfully connected to MongoDB initial pool'
+    );
   } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
+    logger.error(error, 'Failed to execute initial connection to MongoDB');
     process.exit(1);
   }
 };

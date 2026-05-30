@@ -4,6 +4,7 @@ import { Video } from '../../models/Video.js';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { b2Client } from '../../config/b2.js';
+import { logger } from '../../utils/logger.js';
 
 export const getUploadUrl = async (
   req: AuthRequest,
@@ -67,7 +68,7 @@ export const getUploadUrl = async (
       storageKey: uniqueStorageKey,
     });
   } catch (error) {
-    console.error('Error generating upload URL:', error);
+    logger.error(error, 'Error generating upload URL');
     res.status(500).json({
       success: false,
       message: 'Internal server error during upload',

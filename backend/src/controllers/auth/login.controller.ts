@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { User } from '../../models/User.js';
 import { getJwtSecret } from '../../constants/GetJwtSecret.js';
+import { logger } from '../../utils/logger.js';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -62,7 +63,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    logger.error(error, 'Registration error');
     res.status(500).json({
       success: false,
       message: 'Internal server error during registration',

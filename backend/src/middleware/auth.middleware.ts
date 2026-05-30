@@ -2,6 +2,7 @@ import type { Response, NextFunction } from 'express';
 import type { AuthRequest } from '../constants/AuthResponse.js';
 import jwt from 'jsonwebtoken';
 import { getJwtSecret } from '../constants/GetJwtSecret.js';
+import { logger } from '../utils/logger.js';
 
 export const protect = async (
   req: AuthRequest,
@@ -27,10 +28,10 @@ export const protect = async (
       return;
     }
     req.userId = decoded['userId'] as string;
-    
+
     next();
   } catch (error) {
-    console.error('Issue occurred:', error);
+    logger.error(error);
     res.status(401).json({
       success: false,
       message: 'Not authorized, token failed',

@@ -11,6 +11,14 @@
     "./schema/auth": {
       "types": "./dist/schema/auth/auth.d.ts",
       "import": "./dist/schema/auth/auth.js"
+    },
+    "./schema/video": {
+      "types": "./dist/schema/video/video.d.ts",
+      "import": "./dist/schema/video/video.js"
+    },
+    "./constants": {
+      "types": "./dist/constants/constants.d.ts",
+      "import": "./dist/constants/constants.js"
     }
   },
   "scripts": {

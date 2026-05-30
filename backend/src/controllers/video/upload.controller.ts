@@ -10,7 +10,7 @@ import {
   ALLOWED_VIDEO_TYPES,
   MAX_DESCRIPTION_LENGTH,
   MAX_TITLE_LENGTH,
-} from '../../constants/VideoCons.js';
+} from '@clipvity/shared/constants';
 
 export const getUploadUrl = async (
   req: AuthRequest,

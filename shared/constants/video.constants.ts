@@ -13,6 +13,30 @@ export const ALLOWED_VIDEO_TYPES: Record<string, string> = {
   'video/mpeg': 'mpeg',
 };
 
+export const VIDEO_CATEGORIES = [
+  'Music',
+  'Gaming',
+  'Comedy',
+  'Film & TV',
+  'Animation',
+  'Education',
+  'Science & Technology',
+  'News & Politics',
+  'History',
+  'Sports',
+  'Travel & Events',
+  'Food & Cooking',
+  'Fashion & Beauty',
+  'Health & Fitness',
+  'Pets & Animals',
+  'Autos & Vehicles',
+  'Nonprofits & Activism',
+  'DIY & Crafts',
+  'Other',
+] as const;
+
 export const MAX_TITLE_LENGTH = 200;
 export const MAX_DESCRIPTION_LENGTH = 5000;
 export const MAX_CATEGORY_LENGTH = 100;
+
+export const ALLOWED_VIDEO_MIME_TYPES = Object.keys(ALLOWED_VIDEO_TYPES);

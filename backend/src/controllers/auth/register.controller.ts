@@ -1,12 +1,15 @@
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { serverRegisterSchema } from '@clipvity/shared/schema/auth';
 import { User } from '../../models/User.js';
 import { getJwtSecret } from '../../constants/GetJwtSecret.js';
-import { logger } from '../../utils/logger.js';
 
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const validationResult = serverRegisterSchema.safeParse(req.body);
 
@@ -59,10 +62,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    logger.error(error, 'Registration error');
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error during registration',
-    });
+    next(error);
   }
 };

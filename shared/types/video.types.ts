@@ -1,4 +1,9 @@
-export type VideoStatus = 'processing' | 'published' | 'failed';
+export type VideoStatus =
+  | 'pending'
+  | 'queued'
+  | 'processing'
+  | 'published'
+  | 'failed';
 
 export interface IResolutions {
   p360?: string;

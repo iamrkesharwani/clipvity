@@ -1,9 +1,12 @@
-import type { Response } from 'express';
+import type { NextFunction, Response } from 'express';
 import { User } from '../../models/User.js';
 import type { AuthRequest } from '../../constants/AuthResponse.js';
-import { logger } from '../../utils/logger.js';
 
-export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
+export const getMe = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const userId = req.userId;
 
@@ -35,10 +38,6 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    logger.error(error, 'Get current user error');
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error while fetching user',
-    });
+    next(error);
   }
 };

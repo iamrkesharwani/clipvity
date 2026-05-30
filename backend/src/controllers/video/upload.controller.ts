@@ -1,19 +1,24 @@
-import type { Response } from 'express';
+import type { NextFunction, Response } from 'express';
 import type { AuthRequest } from '../../constants/AuthResponse.js';
+import mongoose from 'mongoose';
 import { Video } from '../../models/Video.js';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { b2Client } from '../../config/b2.js';
-import { logger } from '../../utils/logger.js';
+import {
+  MAX_CATEGORY_LENGTH,
+  ALLOWED_VIDEO_TYPES,
+  MAX_DESCRIPTION_LENGTH,
+  MAX_TITLE_LENGTH,
+} from '../../constants/VideoCons.js';
 
 export const getUploadUrl = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<void> => {
   try {
-    const { title, description = '', category = '', fileType } = req.body;
     const userId = req.userId;
-
     if (!userId) {
       res
         .status(401)
@@ -21,7 +26,22 @@ export const getUploadUrl = async (
       return;
     }
 
-    if (!title || !fileType) {
+    const bucketName = process.env['B2_BUCKET_NAME'];
+    if (!bucketName) {
+      res
+        .status(500)
+        .json({ success: false, message: 'Storage not configured' });
+      return;
+    }
+
+    const {
+      title,
+      description = '',
+      category = '',
+      fileType,
+    } = req.body as Record<string, string>;
+
+    if (!title?.trim() || !fileType) {
       res.status(400).json({
         success: false,
         message: 'Title and fileType are required',
@@ -29,49 +49,54 @@ export const getUploadUrl = async (
       return;
     }
 
-    if (!fileType.startsWith('video/')) {
+    const extension = ALLOWED_VIDEO_TYPES[fileType];
+    if (!extension) {
       res.status(400).json({
         success: false,
-        message: 'Invalid file format. Only video files are allowed.',
+        message: `Unsupported file type. Allowed types: ${Object.keys(ALLOWED_VIDEO_TYPES).join(', ')}`,
       });
       return;
     }
 
-    const video = await Video.create({
-      owner: userId,
-      title,
-      description,
-      category,
-      status: 'processing',
-      thumbnail: '',
-      masterUrl: '',
-    });
+    const sanitizedTitle = title.trim().slice(0, MAX_TITLE_LENGTH);
+    const sanitizedDescription = description
+      .trim()
+      .slice(0, MAX_DESCRIPTION_LENGTH);
+    const sanitizedCategory = category.trim().slice(0, MAX_CATEGORY_LENGTH);
 
-    const extension = fileType.split('/')[1] || 'mp4';
-    const uniqueStorageKey = `raw/${userId}/${video._id}.${extension}`;
+    const safeUserId = String(userId).replace(/[^a-zA-Z0-9_-]/g, '_');
+    const videoId = new mongoose.Types.ObjectId();
+    const storageKey = `raw/${safeUserId}/${videoId.toString()}.${extension}`;
 
     const command = new PutObjectCommand({
-      Bucket: process.env['B2_BUCKET_NAME'],
-      Key: uniqueStorageKey,
+      Bucket: bucketName,
+      Key: storageKey,
       ContentType: fileType,
     });
 
-    const signedUrl = await getSignedUrl(b2Client, command, {
+    const uploadUrl = await getSignedUrl(b2Client, command, {
       expiresIn: 3600,
+    });
+
+    await Video.create({
+      _id: videoId,
+      owner: userId,
+      title: sanitizedTitle,
+      description: sanitizedDescription,
+      category: sanitizedCategory,
+      status: 'pending',
+      thumbnail: '',
+      masterUrl: '',
     });
 
     res.status(200).json({
       success: true,
       message: 'Upload URL generated successfully',
-      uploadUrl: signedUrl,
-      videoId: video._id,
-      storageKey: uniqueStorageKey,
+      uploadUrl,
+      videoId: videoId.toString(),
+      storageKey,
     });
   } catch (error) {
-    logger.error(error, 'Error generating upload URL');
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error during upload',
-    });
+    next(error);
   }
 };

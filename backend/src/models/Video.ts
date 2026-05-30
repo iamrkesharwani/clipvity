@@ -40,7 +40,13 @@ const VideoSchema = new Schema<VideoDocument>(
     },
     status: {
       type: String,
-      enum: ['processing', 'published', 'failed'] satisfies VideoStatus[],
+      enum: [
+        'pending',
+        'processing',
+        'queued',
+        'published',
+        'failed',
+      ] satisfies VideoStatus[],
       default: 'processing',
       index: true,
     },

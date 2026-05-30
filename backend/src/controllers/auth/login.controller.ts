@@ -1,12 +1,15 @@
 import { loginSchema } from '@clipvity/shared/schema/auth';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { User } from '../../models/User.js';
 import { getJwtSecret } from '../../constants/GetJwtSecret.js';
-import { logger } from '../../utils/logger.js';
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const validationResult = loginSchema.safeParse(req.body);
 
@@ -63,10 +66,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    logger.error(error, 'Registration error');
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error during registration',
-    });
+    next(error);
   }
 };

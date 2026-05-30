@@ -1,7 +1,10 @@
-import type { Request, Response } from 'express';
-import { logger } from '../../utils/logger.js';
+import type { NextFunction, Request, Response } from 'express';
 
-export const logout = (_req: Request, res: Response): void => {
+export const logout = (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   try {
     res.cookie('token', '', {
       httpOnly: true,
@@ -15,10 +18,6 @@ export const logout = (_req: Request, res: Response): void => {
       message: 'Logged out successfully',
     });
   } catch (error) {
-    logger.error(error, 'Logout error');
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error during logout',
-    });
+    next(error);
   }
 };
